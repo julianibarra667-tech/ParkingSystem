@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ParkingSystem.core/ParkingSystem.core.csproj" />
+  <Project Path="ParkingSystem.UI/ParkingSystem.UI.csproj" />
+</Solution>
