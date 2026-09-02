@@ -1,9 +1,8 @@
-using System;
 using ParkingSystem.core.Services;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
 
 namespace ParkingSystem.UI
 {
@@ -15,8 +14,7 @@ namespace ParkingSystem.UI
         {
             InitializeComponent();
 
-            // Initialize parking lot: Capacity of 5 vehicles, $3.50 hourly rate
-            _parkingService = new ParkingService(5, 3.50m);
+            _parkingService = new ParkingService(5, 1500m);
 
             InitializeCustomComponents();
             UpdateDashboard();
@@ -32,12 +30,12 @@ namespace ParkingSystem.UI
         {
             try
             {
-                // UI Input Validation (Required field & blank space)
+                // Validar espacios en blanco y otros errores de entrada
                 string licensePlate = txtLicensePlate.Text.Trim();
 
                 if (string.IsNullOrWhiteSpace(licensePlate))
                 {
-                    MessageBox.Show("License plate is required.", "Validation Error",
+                    MessageBox.Show("Matricula Requerida.", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     txtLicensePlate.Focus();
                     return;
@@ -45,10 +43,10 @@ namespace ParkingSystem.UI
 
                 DateTime entryTime = dtpEntryTime.Value;
 
-                // Call Business Logic
+                // logica de parq
                 _parkingService.RegisterEntry(licensePlate, entryTime);
 
-                MessageBox.Show("Vehicle entry registered successfully!", "Success",
+                MessageBox.Show("El vehiculo se registr exitosamente", "Excelente",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 ClearInputs();
@@ -60,7 +58,7 @@ namespace ParkingSystem.UI
             }
             catch (InvalidOperationException ex)
             {
-                MessageBox.Show(ex.Message, "Business Rule Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Erorr", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
@@ -73,21 +71,12 @@ namespace ParkingSystem.UI
         {
             try
             {
-                // UI Input Validation
+                // validacion
                 string licensePlate = txtLicensePlate.Text.Trim();
 
                 if (string.IsNullOrWhiteSpace(licensePlate))
                 {
-                    MessageBox.Show("License plate is required to process exit.", "Validation Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtLicensePlate.Focus();
-                    return;
-                }
-
-                // Check if vehicle is parked
-                if (!_parkingService.IsVehicleParked(licensePlate))
-                {
-                    MessageBox.Show("This vehicle is not currently parked in the lot.", "Vehicle Not Found",
+                    MessageBox.Show("Es necesaria la matricula para la salida", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     txtLicensePlate.Focus();
                     return;
@@ -95,11 +84,11 @@ namespace ParkingSystem.UI
 
                 DateTime exitTime = dtpExitTime.Value;
 
-                // Call Business Logic
+                // logica de negocio
                 decimal totalFee = _parkingService.RegisterExit(licensePlate, exitTime);
 
-                MessageBox.Show($"Vehicle exit registered successfully!\n\nTotal Fee to Pay: ${totalFee:F2}",
-                    "Exit Processed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"El vehiculo se registr exitosamente!\n\nTotal: ${totalFee:F2}",
+                    "Fin del proceso", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 ClearInputs();
                 UpdateDashboard();
@@ -121,13 +110,13 @@ namespace ParkingSystem.UI
 
         private void UpdateDashboard()
         {
-            // Refresh Grid Data
+            // Refrescar lainformación de los vehículos estacionados
             dgvParkedVehicles.DataSource = null;
             dgvParkedVehicles.DataSource = _parkingService.GetCurrentlyParkedVehicles();
 
-            // Update Capacity Status
+            // Actualizar capacidad
             bool available = _parkingService.HasAvailableSpace();
-            lblStatus.Text = available ? "Status: AVAILABLE" : "Status: FULL";
+            lblStatus.Text = available ? "Disponible" : "Lleno";
             lblStatus.ForeColor = available ? Color.Green : Color.Red;
         }
 
